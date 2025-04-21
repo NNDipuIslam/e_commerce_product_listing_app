@@ -16,7 +16,7 @@ dependencies:
   equatable: 
   shared_preferences: ^2.3.4
   connectivity_plus: ^6.1.1
-  responsive_grid_list: ^1.4.0
+  flutter_screenutil: ^5.9.3
 
 dev_dependencies:
   flutter_test:
