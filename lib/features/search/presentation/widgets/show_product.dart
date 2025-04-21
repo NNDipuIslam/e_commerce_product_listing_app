@@ -110,18 +110,63 @@ class ProductRating extends StatelessWidget {
   }
 }
 
+class ImageWithFavourite extends StatefulWidget {
+  final String imagePath;
+
+  const ImageWithFavourite({required this.imagePath, Key? key})
+      : super(key: key);
+
+  @override
+  _ImageWithFavouriteState createState() => _ImageWithFavouriteState();
+}
+
+class _ImageWithFavouriteState extends State<ImageWithFavourite> {
+  bool isFavorite = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Center(
+          child: CustomImageWidget(
+            height: 164.h, // Adjusted height to match the image
+            borderRadius: 12.r,
+            imagePath: widget.imagePath,
+          ),
+        ),
+        Positioned(
+          top: 8.h,
+          right: 8.w,
+          child: CircleAvatar(
+            radius: 16.r,
+            backgroundColor: Colors.white,
+            child: IconButton(
+              onPressed: () {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+              },
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.black54,
+                size: 20.r,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 // Main Product Widget
 Widget showProduct({required BuildContext context}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      CustomImageWidget(
-        height: 164.h, // responsive height
-        width: double.infinity,
-        fit: BoxFit.cover,
-        borderRadius: 4.r, // responsive border radius
-        imagePath: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
-      ),
+      ImageWithFavourite(
+          imagePath:
+              "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"),
       const SizedBox(height: 8),
       ProductTitle(title: 'Allen Solly Regular fit cotton shirt'),
       const SizedBox(height: 8),
