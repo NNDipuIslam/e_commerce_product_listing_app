@@ -12,12 +12,16 @@ class SearchInitial extends SearchState {}
 class SearchLoading extends SearchState {}
 
 class SearchLoaded extends SearchState {
-  final List<dynamic> results; // Replace `dynamic` with your specific data type
+  final List<Product> products;
+  final bool hasMore;
 
-  const SearchLoaded(this.results);
+  const SearchLoaded({
+    required this.products,
+    required this.hasMore,
+  });
 
   @override
-  List<Object> get props => [results];
+  List<Object> get props => [products, hasMore];
 }
 
 class SearchError extends SearchState {

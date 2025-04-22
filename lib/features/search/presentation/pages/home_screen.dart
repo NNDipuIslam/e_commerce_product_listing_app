@@ -1,7 +1,9 @@
 import 'package:e_commerce_product_listing_app/core/constants/app_pallete.dart';
+import 'package:e_commerce_product_listing_app/core/exports.dart';
 import 'package:e_commerce_product_listing_app/features/search/presentation/widgets/show_product.dart';
 import 'package:e_commerce_product_listing_app/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<SearchBloc>().add(SearchInitialLoad());
     _focusNode.addListener(_handleFocusChange);
   }
 
@@ -70,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: () {
         Navigator.pop(context);
         print('Sort: $title');
-        // You can add sorting logic here
       },
     );
   }
@@ -89,7 +91,26 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 19),
               _buildSearchBar(),
               const SizedBox(height: 16),
-              _buildProductGrid(),
+              BlocBuilder<SearchBloc, SearchState>(
+                builder: (context, state) {
+                  if (state is SearchLoading)
+                    CircularProgressIndicator();
+                  else if (state is SearchError) {
+                  } else if (state is SearchLoaded) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.products.length,
+                      itemBuilder: (context, index) {
+                        return _buildProductGrid();
+                      },
+                    );
+                  }
+                  return Center(
+                    child: Text('Something Went Wrong'),
+                  );
+                },
+              ),
             ],
           ),
         ),
