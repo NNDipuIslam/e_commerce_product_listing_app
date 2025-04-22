@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const SizedBox(height: 19),
                   Padding(
-                    padding: const EdgeInsets.only(right: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: _buildSearchBar(),
                   ),
                   const SizedBox(height: 16),

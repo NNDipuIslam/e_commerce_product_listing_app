@@ -26,14 +26,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<SortProducts>(_sortProduct);
   }
 
-  // Initial load of products
   Future<void> _onInitialLoad(
       SearchInitialLoad event, Emitter<SearchState> emit) async {
-    // Emit loading state
-    emit(SearchLoading([])); // Empty list for the initial load
+    emit(SearchLoading([]));
 
-    _skip = 0; // Reset skip for new search
-    _allProducts.clear(); // Clear the list to reload data
+    _skip = 0;
+    _allProducts.clear();
 
     // Fetch the products
     final result = await getProducts(skip: _skip, limit: _limit);
@@ -46,9 +44,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       (productsModel) {
         _allProducts.addAll(productsModel);
         _skip += _limit;
-        _totalProducts = productsModel.length; // Update total count
+        _totalProducts = productsModel.length;
 
-        // Check if more products are available
         final hasMore = _totalProducts > _allProducts.length;
 
         // Emit the loaded state
@@ -66,8 +63,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       SearchLoadMore event, Emitter<SearchState> emit) async {
     if (_isFetching) return; // Avoid duplicate requests while fetching
 
-    _isFetching = true; // Set fetching state to true
-    emit(SearchLoading(_allProducts)); // Show loading with current products
+    _isFetching = true;
+    emit(SearchLoading(_allProducts));
 
     final result = await getProducts(skip: _skip, limit: _limit);
 
@@ -81,7 +78,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         _skip += _limit;
         _totalProducts = productsModel.length;
 
-        // Check if more products are available
         final hasMore = _totalProducts > _allProducts.length;
 
         // Emit the loaded state with more products
@@ -158,7 +154,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     );
   }
 
-  Future<void> _sortProduct(SortProducts event, Emitter<SearchState> emit) async{
+  Future<void> _sortProduct(
+      SortProducts event, Emitter<SearchState> emit) async {
     print('here again ${event.option}');
     List<Product> sortedProducts = List.from(_searchProducts);
     switch (event.option) {
@@ -166,13 +163,16 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         sortedProducts.sort((a, b) => (a.title ?? '').compareTo(b.title ?? ''));
         break;
       case SortOption.priceLowToHigh:
-        sortedProducts.sort((a, b) => (a.price ?? 0.0).compareTo(b.price ?? 0.0));
+        sortedProducts
+            .sort((a, b) => (a.price ?? 0.0).compareTo(b.price ?? 0.0));
         break;
       case SortOption.priceHighToLow:
-        sortedProducts.sort((a, b) => (b.price ?? 0.0).compareTo(a.price ?? 0.0));
+        sortedProducts
+            .sort((a, b) => (b.price ?? 0.0).compareTo(a.price ?? 0.0));
         break;
       case SortOption.rating:
-        sortedProducts.sort((a, b) => (b.rating ?? 0.0).compareTo(a.rating ?? 0.0));
+        sortedProducts
+            .sort((a, b) => (b.rating ?? 0.0).compareTo(a.rating ?? 0.0));
         break;
     }
 
