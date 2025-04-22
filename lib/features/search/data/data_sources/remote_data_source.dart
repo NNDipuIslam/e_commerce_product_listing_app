@@ -51,7 +51,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         return [];
       }
     } catch (e) {
-      throw Exception('Failed to load products: $e');
+      throw e;
     }
   }
 
@@ -92,7 +92,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         return [];
       }
     } catch (e) {
-      throw Exception('Failed to load products: $e');
+      throw e;
     }
   }
 }

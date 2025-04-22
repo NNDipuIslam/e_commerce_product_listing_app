@@ -46,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Product> products = sl<ProductLocalDataSource>().getAllProducts();
     return SafeArea(
         child: Scaffold(
             backgroundColor: AppPalette.white,
@@ -64,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16),
                       Expanded(child: BlocBuilder<SearchBloc, SearchState>(
                           builder: (context, state) {
+                        List<Product> products =
+                            sl<ProductLocalDataSource>().getAllProducts();
                         if (state is SearchLoading) {
                           if (state.isFirstFetch)
                             return const Center(
@@ -82,11 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                           });
-
-                          return const Center(
-                            child: Text(
-                                'Something went wrong, please try again later.'),
-                          );
                         } else if (state is SearchLoaded) {
                           products = state.products;
                         }

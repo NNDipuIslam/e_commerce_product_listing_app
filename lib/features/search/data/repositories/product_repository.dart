@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:e_commerce_product_listing_app/core/exports.dart';
 import 'package:e_commerce_product_listing_app/features/search/data/data_sources/local_data_source.dart';
 
@@ -35,7 +36,11 @@ class ProductRepositoryImpl extends ProductRepository {
       List<Product> productsWithoutJson = products;
       return Right(productsWithoutJson);
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+       if (e is DioException) {
+      return Left(OfflineFailure('Request failed with error: ${e.message}'));
+    } else {
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    }
     }
   }
 }
