@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:e_commerce_product_listing_app/core/exports.dart';
 import 'package:e_commerce_product_listing_app/features/search/data/models/availability_status.dart';
+import 'package:e_commerce_product_listing_app/features/search/domain/use_cases/search_product_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,8 +45,10 @@ Future<void> init() async {
   // Register Use Cases
   sl.registerLazySingleton<GetProducts>(
       () => GetProducts(sl<ProductRepository>()));
+  sl.registerLazySingleton<SearchProduct>(
+      () => SearchProduct(sl<ProductRepository>()));
 
   // Register Blocs
-  sl.registerFactory<SearchBloc>(
-      () => SearchBloc(getProducts: sl<GetProducts>()));
+  sl.registerFactory<SearchBloc>(() => SearchBloc(
+      getProducts: sl<GetProducts>(), searchProduct: sl<SearchProduct>()));
 }

@@ -30,6 +30,20 @@ class SearchLoaded extends SearchState {
   List<Object> get props => [products, total, hasMore];
 }
 
+class SearchLoadedWithQuery extends SearchState {
+  final List<Product> products;
+  final int total;
+  final bool hasMore;
+
+  const SearchLoadedWithQuery({
+    required this.products,
+    required this.total,
+    required this.hasMore,
+  });
+  @override
+  List<Object> get props => [products, total, hasMore];
+}
+
 class SearchError extends SearchState {
   final String message;
 

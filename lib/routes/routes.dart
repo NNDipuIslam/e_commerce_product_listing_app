@@ -1,17 +1,19 @@
 import 'package:e_commerce_product_listing_app/features/search/presentation/pages/home_screen.dart';
+import 'package:e_commerce_product_listing_app/features/search/presentation/pages/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {
   static const String homeScreen = "/homeScreen";
+  static const String searchScreen = "/searchScreen";
 
   // Defining the routes map with type safety
   static Map<String, WidgetBuilder> get routes => {
         homeScreen: (context) => const HomeScreen(),
+        searchScreen: (context) => const SearchScreen()
       };
 
   // Error Route
   static Route<dynamic> errorRoute(RouteSettings settings) {
-    // Optionally, you could pass `settings.arguments` to error screens for debugging purposes
     return MaterialPageRoute(
       builder: (context) => Scaffold(
         appBar: AppBar(title: const Text("Error")),
@@ -26,13 +28,15 @@ class AppRoutes {
     );
   }
 
-  // Dynamic Route Example: You can create routes with arguments
+  // Dynamic Route
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case homeScreen:
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),
         );
+      case searchScreen:
+        return MaterialPageRoute(builder: (_) => const SearchScreen());
 
       default:
         return errorRoute(settings);

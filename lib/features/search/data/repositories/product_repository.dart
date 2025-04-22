@@ -24,4 +24,18 @@ class ProductRepositoryImpl extends ProductRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Product>>> searchProduct(
+      {required String query, int skip = 0, int limit = 10}) async {
+    try {
+      var products = await productRemoteDataSource.searchProducts(
+          query: query, skip: skip, limit: limit);
+      print('products');
+      List<Product> productsWithoutJson = products;
+      return Right(productsWithoutJson);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

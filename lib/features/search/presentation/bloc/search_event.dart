@@ -11,6 +11,23 @@ class SearchInitialLoad extends SearchEvent {}
 
 class SearchLoadMore extends SearchEvent {}
 
+class SearchLoadMoreWithQuery extends SearchEvent {
+  final String query;
+
+  const SearchLoadMoreWithQuery(this.query);
+
+  @override
+  List<Object> get props => [query];
+}
+
+enum SortOption { title, priceLowToHigh, priceHighToLow, rating }
+
+class SortProducts extends SearchEvent {
+  final SortOption option;
+
+  SortProducts(this.option);
+}
+
 class SearchQueryChanged extends SearchEvent {
   final String query;
 
