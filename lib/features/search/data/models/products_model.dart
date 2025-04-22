@@ -3,12 +3,6 @@ import 'package:e_commerce_product_listing_app/core/exports.dart';
 
 part 'products_model.g.dart';
 
-// Enum mapping for JSON
-final availabilityStatusValues = {
-  "In Stock": AvailabilityStatus.inStock,
-  "Low Stock": AvailabilityStatus.lowStock,
-  "Out of Stock": AvailabilityStatus.outOfStock,
-};
 
 @HiveType(typeId: 0)
 class ProductsModel {

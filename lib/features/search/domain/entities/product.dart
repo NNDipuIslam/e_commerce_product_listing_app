@@ -1,10 +1,7 @@
 import 'package:e_commerce_product_listing_app/core/exports.dart';
+import 'package:e_commerce_product_listing_app/features/search/data/models/availability_status.dart';
 
-enum AvailabilityStatus {
-  inStock,
-  lowStock,
-  outOfStock,
-}
+
 
 abstract class Product {
   final int? id;

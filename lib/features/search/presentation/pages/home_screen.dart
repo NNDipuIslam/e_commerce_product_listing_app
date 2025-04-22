@@ -75,13 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      final currentState = context.read<SearchBloc>().state;
-
       // Check if the current state is SearchLoaded and if more data is available
-      if (currentState is SearchLoaded && currentState.hasMore) {
-        // Trigger pagination to load more
-        _searchBloc.add(SearchLoadMore());
-      }
+
+      // Trigger pagination to load more
+      _searchBloc.add(SearchLoadMore());
     }
   }
 
@@ -97,86 +94,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Product> products = [];
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppPalette.white,
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 19),
-              _buildSearchBar(),
-              const SizedBox(height: 16),
-              Expanded(
-                child: BlocBuilder<SearchBloc, SearchState>(
-                  builder: (context, state) {
-                    print('BlocBuilder rebuilt with state: $state');
+        child: Scaffold(
+            backgroundColor: AppPalette.white,
+            resizeToAvoidBottomInset: false,
+            body: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 19),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: _buildSearchBar(),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(child: BlocBuilder<SearchBloc, SearchState>(
+                          builder: (context, state) {
+                        List<Product> products = [];
 
-                    if (state is SearchLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is SearchError) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              state.message,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red,
-                            duration: const Duration(seconds: 3),
-                          ),
-                        );
-                      });
-
-                      return const Center(
-                        child: Text(
-                            'Something went wrong, please try again later.'),
-                      );
-                    } else if (state is SearchLoaded) {
-                      print(state.hasMore);
-                      if (state.products.isEmpty) {
-                        return const Center(
-                            child: Text('No products available'));
-                      }
-
-                      return GridView.builder(
-                        padding: EdgeInsets.zero,
-                        controller: _scrollController,
-                        itemCount:
-                            state.products.length + (state.hasMore ? 1 : 0),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.6,
-                        ),
-                        itemBuilder: (context, index) {
-                          if (index == state.products.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(child: CircularProgressIndicator()),
+                        if (state is SearchLoading) {
+                          if (state.isFirstFetch)
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          products = state.oldProduct;
+                        } else if (state is SearchError) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  state.message,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: Colors.red,
+                                duration: const Duration(seconds: 3),
+                              ),
                             );
-                          }
+                          });
 
-                          return showProduct(
-                              context: context, product: state.products[index]);
-                        },
-                      );
-                    }
+                          return const Center(
+                            child: Text(
+                                'Something went wrong, please try again later.'),
+                          );
+                        } else if (state is SearchLoaded) {
+                          products = state.products;
+                        }
 
-                    return const Center(child: Text('Something went wrong.'));
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                        return GridView.builder(
+                          padding: EdgeInsets.zero,
+                          controller: _scrollController,
+                          itemCount: products.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.6,
+                          ),
+                          itemBuilder: (context, index) {
+                            if (index < products.length) {
+                              return showProduct(
+                                  context: context, product: products[index]);
+                            } else
+                              return const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              );
+                          },
+                        );
+                      }))
+                    ]))));
   }
 
   Widget _buildSearchBar() {

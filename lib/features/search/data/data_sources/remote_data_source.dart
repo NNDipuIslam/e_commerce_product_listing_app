@@ -6,8 +6,10 @@ abstract class ProductRemoteDataSource {
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final ApiService apiService;
+  final ProductLocalDataSource productLocalDataSource;
 
-  ProductRemoteDataSourceImpl(this.apiService);
+  ProductRemoteDataSourceImpl(
+      {required this.apiService, required this.productLocalDataSource});
 
   @override
   Future<List<ProductModel>> getProducts({int skip = 0, int limit = 10}) async {
@@ -31,7 +33,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           List<ProductModel> productsList = List<ProductModel>.from(
             data['products'].map((e) => ProductModel.fromJson(e)),
           );
-
+          for (final product in productsList) {
+            await productLocalDataSource.saveProduct(product);
+          }
           // Return the mapped list of ProductModel objects
           return productsList;
         } else {

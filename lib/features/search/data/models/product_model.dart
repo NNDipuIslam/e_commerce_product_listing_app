@@ -1,4 +1,5 @@
 import 'package:e_commerce_product_listing_app/core/exports.dart';
+import 'package:e_commerce_product_listing_app/features/search/data/models/availability_status.dart';
 import 'package:hive/hive.dart';
 
 part 'product_model.g.dart';

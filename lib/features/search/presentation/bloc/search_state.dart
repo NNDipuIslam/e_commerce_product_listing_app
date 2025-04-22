@@ -10,10 +10,10 @@ abstract class SearchState extends Equatable {
 class SearchInitial extends SearchState {}
 
 class SearchLoading extends SearchState {
-  // final List<Product> oldProduct;
-  // final bool isFirstFetch;
+  final List<Product> oldProduct;
+  final bool isFirstFetch;
 
-  // SearchLoading(this.oldProduct, {this.isFirstFetch = false});
+  SearchLoading(this.oldProduct, {this.isFirstFetch = false});
 }
 
 class SearchLoaded extends SearchState {
