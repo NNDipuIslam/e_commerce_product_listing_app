@@ -1,9 +1,10 @@
+import 'package:e_commerce_product_listing_app/core/exports.dart';
 import 'package:hive/hive.dart';
 
 part 'review_model.g.dart';
 
 @HiveType(typeId: 2)
-class ReviewModel {
+class ReviewModel extends Review{
   @HiveField(0)
   final double? rating;
 

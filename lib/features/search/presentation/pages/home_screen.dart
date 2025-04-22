@@ -14,14 +14,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  late ScrollController _scrollController;
+  late SearchBloc _searchBloc;
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
-    context.read<SearchBloc>().add(SearchInitialLoad());
+    _scrollController = ScrollController();
+    _searchBloc = context.read<SearchBloc>();
+    _scrollController.addListener(_scrollListener);
     _focusNode.addListener(_handleFocusChange);
+    _searchBloc.add(SearchInitialLoad());
   }
 
   void _handleFocusChange() {
@@ -67,6 +72,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      final currentState = context.read<SearchBloc>().state;
+
+      // Check if the current state is SearchLoaded and if more data is available
+      if (currentState is SearchLoaded && currentState.hasMore) {
+        // Trigger pagination to load more
+        _searchBloc.add(SearchLoadMore());
+      }
+    }
+  }
+
   Widget _buildSortOption(String title) {
     return ListTile(
       title: Text(title),
@@ -79,37 +97,80 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Product> products = [];
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppPalette.white,
         resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 19),
               _buildSearchBar(),
               const SizedBox(height: 16),
-              BlocBuilder<SearchBloc, SearchState>(
-                builder: (context, state) {
-                  if (state is SearchLoading)
-                    CircularProgressIndicator();
-                  else if (state is SearchError) {
-                  } else if (state is SearchLoaded) {
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.products.length,
-                      itemBuilder: (context, index) {
-                        return _buildProductGrid();
-                      },
-                    );
-                  }
-                  return Center(
-                    child: Text('Something Went Wrong'),
-                  );
-                },
+              Expanded(
+                child: BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    print('BlocBuilder rebuilt with state: $state');
+
+                    if (state is SearchLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is SearchError) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              state.message,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
+                          ),
+                        );
+                      });
+
+                      return const Center(
+                        child: Text(
+                            'Something went wrong, please try again later.'),
+                      );
+                    } else if (state is SearchLoaded) {
+                      print(state.hasMore);
+                      if (state.products.isEmpty) {
+                        return const Center(
+                            child: Text('No products available'));
+                      }
+
+                      return GridView.builder(
+                        padding: EdgeInsets.zero,
+                        controller: _scrollController,
+                        itemCount:
+                            state.products.length + (state.hasMore ? 1 : 0),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.6,
+                        ),
+                        itemBuilder: (context, index) {
+                          if (index == state.products.length) {
+                            return const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          return showProduct(
+                              context: context, product: state.products[index]);
+                        },
+                      );
+                    }
+
+                    return const Center(child: Text('Something went wrong.'));
+                  },
+                ),
               ),
             ],
           ),
@@ -134,16 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.filter_list, size: 48),
             onPressed: _showSortOptions,
           ),
-      ],
-    );
-  }
-
-  Widget _buildProductGrid() {
-    return Row(
-      children: [
-        Expanded(child: showProduct(context: context)),
-        const SizedBox(width: 26),
-        Expanded(child: showProduct(context: context)),
       ],
     );
   }

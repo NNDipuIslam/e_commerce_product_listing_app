@@ -4,9 +4,9 @@ import 'package:hive/hive.dart';
 part 'product_model.g.dart';
 
 @HiveType(typeId: 1)
-class ProductModel extends HiveObject {
+class ProductModel extends Product {
   @HiveField(0)
-  final String? id;
+  final int? id;
 
   @HiveField(1)
   final String? title;
@@ -21,7 +21,7 @@ class ProductModel extends HiveObject {
   final double? rating;
 
   @HiveField(5)
-  final List<String>? images;
+  final String? thumbnail;
 
   @HiveField(6)
   final List<ReviewModel>? reviews;
@@ -35,21 +35,18 @@ class ProductModel extends HiveObject {
     this.price,
     this.discountPercentage,
     this.rating,
-    this.images,
+    this.thumbnail,
     this.reviews,
     this.availabilityStatus,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"] as String?,
+        id: json["id"] as int?,
         title: json["title"] as String?,
         price: (json["price"] as num?)?.toDouble(),
         discountPercentage: (json["discountPercentage"] as num?)?.toDouble(),
         rating: (json["rating"] as num?)?.toDouble(),
-        images: (json["images"] as List<dynamic>?)
-                ?.map((x) => x as String)
-                .toList() ??
-            [],
+        thumbnail: json["thumbnail"] as String?,
         reviews: (json["reviews"] as List<dynamic>?)
                 ?.map((x) => ReviewModel.fromJson(x))
                 .toList() ??

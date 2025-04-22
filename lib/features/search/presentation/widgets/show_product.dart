@@ -36,43 +36,58 @@ class PriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         // Discounted Price
-        Text(
-          discountedPrice,
-          style: TextStyle(
-            fontSize: 14.sp, // responsive font size
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+        Flexible(
+          flex: 2,
+          child: Text(
+            discountedPrice,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
         ),
-        SizedBox(width: 10.w),
+        SizedBox(width: 6.w),
+
         // Original Price (strikethrough)
-        Text(
-          originalPrice,
-          style: TextStyle(
-            fontSize: 10.sp, // responsive font size
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-            decoration: TextDecoration.lineThrough,
+        if (originalPrice.isNotEmpty)
+          Flexible(
+            flex: 2,
+            child: Text(
+              originalPrice,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+                decoration: TextDecoration.lineThrough,
+              ),
+            ),
           ),
-        ),
-        SizedBox(width: 10.w),
+        SizedBox(width: 6.w),
+
         // Discount Percentage
-        Text(
-          discount,
-          style: TextStyle(
-            fontSize: 10.sp, // responsive font size
-            color: AppPalette.warning,
-            fontWeight: FontWeight.w500,
+        if (discount.isNotEmpty)
+          Flexible(
+            flex: 2,
+            child: Text(
+              discount,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10.sp,
+                color: AppPalette.warning,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-        ),
-        SizedBox(width: 20.w),
       ],
     );
   }
 }
+
 
 // Rating Widget
 class ProductRating extends StatelessWidget {
@@ -160,23 +175,37 @@ class _ImageWithFavouriteState extends State<ImageWithFavourite> {
 }
 
 // Main Product Widget
-Widget showProduct({required BuildContext context}) {
+Widget showProduct({required BuildContext context, required Product product}) {
+  final double price = product.price ?? 0;
+  final double discount = product.discountPercentage ?? 0;
+  final double discountedPrice = price - (price * discount / 100);
+
+  final bool hasDiscount = discount > 0;
+
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       ImageWithFavourite(
-          imagePath:
-              "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"),
-      const SizedBox(height: 8),
-      ProductTitle(title: 'Allen Solly Regular fit cotton shirt'),
-      const SizedBox(height: 8),
-      PriceRow(
-        discountedPrice: '\$35',
-        originalPrice: '\$40.25',
-        discount: '15% OFF',
+        imagePath: product.thumbnail ??
+            "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
       ),
       const SizedBox(height: 8),
-      ProductRating(rating: 4.3, reviews: 41),
+      ProductTitle(title: product.title ?? 'Unknown product'),
+      const SizedBox(height: 8),
+      hasDiscount
+          ? PriceRow(
+              discountedPrice: '\$${discountedPrice.toStringAsFixed(2)}',
+              originalPrice: '\$${price.toStringAsFixed(2)}',
+              discount: '${discount.toStringAsFixed(0)}% OFF',
+            )
+          : PriceRow(
+              discountedPrice: '\$${price.toStringAsFixed(2)}',
+              originalPrice: '',
+              discount: '',
+            ),
+      const SizedBox(height: 8),
+      ProductRating(
+          rating: product.rating ?? 0, reviews: product.reviews?.length ?? 0),
     ],
   );
 }

@@ -9,19 +9,25 @@ abstract class SearchState extends Equatable {
 
 class SearchInitial extends SearchState {}
 
-class SearchLoading extends SearchState {}
+class SearchLoading extends SearchState {
+  // final List<Product> oldProduct;
+  // final bool isFirstFetch;
+
+  // SearchLoading(this.oldProduct, {this.isFirstFetch = false});
+}
 
 class SearchLoaded extends SearchState {
   final List<Product> products;
+  final int total;
   final bool hasMore;
 
   const SearchLoaded({
     required this.products,
+    required this.total,
     required this.hasMore,
   });
-
   @override
-  List<Object> get props => [products, hasMore];
+  List<Object> get props => [products, total, hasMore];
 }
 
 class SearchError extends SearchState {

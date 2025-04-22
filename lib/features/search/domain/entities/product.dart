@@ -6,20 +6,22 @@ enum AvailabilityStatus {
   outOfStock,
 }
 
-class Product {
-  int? id;
-  String? title;
-  double? price;
-  double? discountPercentage;
-  double? rating;
-  List<String>? images;
-  List<ReviewModel>? reviews;
-  AvailabilityStatus? availabilityStatus;
+abstract class Product {
+  final int? id;
+  final String? title;
+  final double? price;
+  final String? thumbnail;
+  final double? discountPercentage;
+  final double? rating;
+  final List<String>? images;
+  final List<ReviewModel>? reviews;
+  final AvailabilityStatus? availabilityStatus;
 
   Product({
     this.id,
     this.title,
     this.price,
+    this.thumbnail,
     this.discountPercentage,
     this.rating,
     this.images,

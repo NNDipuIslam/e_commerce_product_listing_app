@@ -13,12 +13,14 @@ class ProductRepositoryImpl extends ProductRepository {
   Future<Either<Failure, List<Product>>> getProducts(
       {int skip = 0, int limit = 10}) async {
     try {
-      final products =
+      var products =
           await productRemoteDataSource.getProducts(skip: skip, limit: limit);
-      List<Product> productsWithoutJson =
-          products.map((e) => e as Product).toList();
+      print('products');
+      List<Product> productsWithoutJson = products;
+
       return Right(productsWithoutJson);
     } catch (e) {
+      print(e.toString());
       return Left(ServerFailure(e.toString()));
     }
   }

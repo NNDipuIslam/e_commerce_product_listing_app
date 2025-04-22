@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:e_commerce_product_listing_app/core/exports.dart';
-
 import 'package:equatable/equatable.dart';
 
 part 'search_event.dart';
@@ -12,10 +11,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final int _limit = 10;
   bool _isFetching = false;
   List<Product> _allProducts = [];
+  int _totalProducts = 0; // Store the total number of products
+
   SearchBloc({required this.getProducts}) : super(SearchInitial()) {
     on<SearchInitialLoad>(_onInitialLoad);
     on<SearchLoadMore>(_onLoadMore);
   }
+
   Future<void> _onInitialLoad(
       SearchInitialLoad event, Emitter<SearchState> emit) async {
     emit(SearchLoading());
@@ -25,21 +27,27 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     final result = await getProducts(skip: _skip, limit: _limit);
 
     result.fold(
-      (failure) => emit(SearchError(failure.message)),
-      (products) {
-        _allProducts.addAll(products);
+      (failure) {
+        emit(SearchError(failure.message));
+      },
+      (productsModel) {
+        _allProducts.addAll(productsModel);
         _skip += _limit;
+        _totalProducts = productsModel.length; // Store the total
+        final hasMore = _limit == _totalProducts; // Check if more data exists
         emit(SearchLoaded(
-            products: _allProducts, hasMore: products.length == _limit));
+          products: _allProducts,
+          total: _totalProducts,
+          hasMore: hasMore,
+        ));
       },
     );
   }
 
   Future<void> _onLoadMore(
       SearchLoadMore event, Emitter<SearchState> emit) async {
-    if (_isFetching || state is! SearchLoaded) return;
+    emit(SearchLoading());
 
-    _isFetching = true;
     final result = await getProducts(skip: _skip, limit: _limit);
 
     result.fold(
@@ -47,12 +55,25 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         _isFetching = false;
         emit(SearchError(failure.message));
       },
-      (products) {
-        _allProducts.addAll(products);
+      (productsModel) {
+        _allProducts.addAll(productsModel);
         _skip += _limit;
+        _totalProducts = productsModel.length; // Update total if needed
+        final hasMore = _limit == _totalProducts; // Check if more data exists
+        print(hasMore);
         _isFetching = false;
-        emit(SearchLoaded(
-            products: _allProducts, hasMore: products.length == _limit));
+        try {
+          emit(SearchLoaded(
+            products: _allProducts,
+            total: _totalProducts,
+            hasMore: hasMore,
+          ));
+        } catch (e) {
+          print(e.toString());
+        }
+
+        print(
+            'Got more ${productsModel.length}, total ${_allProducts.length}, hasMore: $hasMore');
       },
     );
   }
