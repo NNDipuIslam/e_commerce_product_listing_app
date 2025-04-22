@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             }
             return GridView.builder(
-              padding: EdgeInsets.only(left: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               controller: _scrollController,
               itemCount: products.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

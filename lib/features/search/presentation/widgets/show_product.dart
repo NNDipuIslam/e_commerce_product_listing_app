@@ -143,11 +143,23 @@ class _ImageWithFavouriteState extends State<ImageWithFavourite> {
     return Stack(
       children: [
         Center(
-          child: CustomImageWidget(
-            height: 164.h, // Adjusted height to match the image
-            borderRadius: 12.r,
-            imagePath: widget.imagePath,
-          ),
+          child: Container(
+  height: 164.h,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(12.r),
+    color: AppPalette.imageBackground, // Background color for the image area
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(12.r),
+    child: Image.network(
+      widget.imagePath,
+      height: 164.h,
+      width: double.infinity,
+      fit: BoxFit.cover,
+    ),
+  ),
+)
+
         ),
         Positioned(
           top: 8.h,

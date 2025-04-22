@@ -6,5 +6,6 @@ class AppPalette {
   static const Color yellow_500 = Color.fromRGBO(245, 158, 11, 1);
   static const Color white = Color.fromRGBO(255, 255, 255, 1);
   static const Color naturalGrey = Color.fromRGBO(249, 250, 251, 1);
+  static const Color imageBackground= Color.fromRGBO(220, 222, 231, 1);
   static const Color grey = Colors.grey;
 }

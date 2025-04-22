@@ -50,68 +50,66 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
             backgroundColor: AppPalette.white,
             resizeToAvoidBottomInset: false,
-            body: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 19),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: _buildSearchBar(),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(child: BlocBuilder<SearchBloc, SearchState>(
-                          builder: (context, state) {
-                        List<Product> products =
-                            sl<ProductLocalDataSource>().getAllProducts();
-                        if (state is SearchLoading) {
-                          if (state.isFirstFetch)
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          products = state.oldProduct;
-                        } else if (state is SearchError) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  state.message,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: Colors.red,
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
-                          });
-                        } else if (state is SearchLoaded) {
-                          products = state.products;
-                        }
-
-                        return GridView.builder(
-                          padding: EdgeInsets.zero,
-                          controller: _scrollController,
-                          itemCount: products.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.6,
+            body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 19),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: _buildSearchBar(),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(child: BlocBuilder<SearchBloc, SearchState>(
+                      builder: (context, state) {
+                    List<Product> products =
+                        sl<ProductLocalDataSource>().getAllProducts();
+                    if (state is SearchLoading) {
+                      if (state.isFirstFetch)
+                        return const Center(
+                            child: CircularProgressIndicator());
+                      products = state.oldProduct;
+                    } else if (state is SearchError) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              state.message,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 3),
                           ),
-                          itemBuilder: (context, index) {
-                            if (index < products.length) {
-                              return showProduct(
-                                  context: context, product: products[index]);
-                            } else
-                              return const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child:
-                                    Center(child: CircularProgressIndicator()),
-                              );
-                          },
                         );
-                      }))
-                    ]))));
+                      });
+                    } else if (state is SearchLoaded) {
+                      products = state.products;
+                    }
+            
+                    return GridView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      controller: _scrollController,
+                      itemCount: products.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.6,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < products.length) {
+                          return showProduct(
+                              context: context, product: products[index]);
+                        } else
+                          return const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child:
+                                Center(child: CircularProgressIndicator()),
+                          );
+                      },
+                    );
+                  }))
+                ])));
   }
 
   Widget _buildSearchBar() {
