@@ -1,4 +1,3 @@
-import 'package:e_commerce_product_listing_app/core/constants/app_pallete.dart';
 import 'package:e_commerce_product_listing_app/core/exports.dart';
 import 'package:e_commerce_product_listing_app/features/search/presentation/widgets/show_product.dart';
 import 'package:e_commerce_product_listing_app/widgets/custom_text_field.dart';
@@ -17,7 +16,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   late SearchBloc _searchBloc;
-  bool _isFocused = false;
+
   @override
   void initState() {
     _scrollController = ScrollController();
@@ -93,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Expanded(child:
               BlocBuilder<SearchBloc, SearchState>(builder: (context, state) {
             List<Product> products = [];
-          
+
             if (state is SearchLoading) {
               if (state.isFirstFetch)
                 return const Center(child: CircularProgressIndicator());
@@ -111,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 );
               });
-          
+
               return const Center(
                 child: Text('Something went wrong, please try again later.'),
               );
